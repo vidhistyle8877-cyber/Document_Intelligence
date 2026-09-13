@@ -1,0 +1,18 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AI Enterprise Copilot</title><link rel="stylesheet" href="/static/style.css"></head><body>
+<header><b>IBM watsonx.ai</b><span>10 AI Document Intelligence</span><button id="logout" onclick="logout()">Logout</button></header>
+<section id="auth"><h1>Enterprise AI Workspace</h1><input id="u" placeholder="Username"><input id="p" type="password" placeholder="Password"><button onclick="login()">Login</button><button onclick="register()">Create account</button><p id="msg"></p></section>
+<main id="app"><div class="hero"><h1>AI Agent Workspace</h1><p>RAG + IBM foundation model + specialist agents + database + analytics.</p></div>
+<div class="metrics"><div><b id="docs">0</b><small>Documents</small></div><div><b id="chats">0</b><small>AI Runs</small></div><div><b id="agentCount">0</b><small>Agent Types</small></div></div>
+<section class="card"><h2>Knowledge Base</h2><input id="file" type="file" accept=".pdf"><button onclick="upload()">Index PDF</button><span id="uploadMsg"></span></section>
+<section class="card"><h2>Agent</h2><select id="agent"><option value="tutor">Tutor Agent</option><option value="researcher">Research Agent</option><option value="analyst">Analyst Agent</option><option value="critic">Critic Agent</option><option value="writer">Writer Agent</option></select><textarea id="q" placeholder="Ask the AI agent..."></textarea><button onclick="run()">Run Agent</button><pre id="out"></pre></section>
+</main><script>
+const $=x=>document.getElementById(x);async function api(u,o={}){let r=await fetch(u,{...o,headers:{'Content-Type':'application/json'}});return r.json()}
+function show(){auth.style.display='none';app.style.display='block';dashboard()}
+async function login(){let d=await api('/api/login',{method:'POST',body:JSON.stringify({username:u.value,password:p.value})});if(d.ok)show();else msg.textContent=d.error}
+async function register(){let d=await api('/api/register',{method:'POST',body:JSON.stringify({username:u.value,password:p.value})});if(d.ok)show();else msg.textContent=d.error}
+async function logout(){await api('/api/logout',{method:'POST'});location.reload()}
+async function upload(){let f=file.files[0],fd=new FormData();fd.append('file',f);let r=await fetch('/api/upload',{method:'POST',body:fd}),d=await r.json();uploadMsg.textContent=d.message||d.error;dashboard()}
+async function run(){out.textContent='Calling IBM watsonx.ai...';let d=await api('/api/agent',{method:'POST',body:JSON.stringify({agent:agent.value,question:q.value})});out.textContent=d.answer||d.error;dashboard()}
+async function dashboard(){let d=await api('/api/dashboard');if(!d.error){docs.textContent=d.documents;chats.textContent=d.chats;agentCount.textContent=d.agents.length}}
+if({{ 'true' if logged else 'false' }})show();else{app.style.display='none';logout.style.display='none'}
+</script></body></html>

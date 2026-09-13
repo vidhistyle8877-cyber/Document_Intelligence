@@ -1,0 +1,6 @@
+Flask>=3.1
+python-dotenv
+pypdf
+SQLAlchemy
+ibm-watsonx-ai[rag]
+chromadb
